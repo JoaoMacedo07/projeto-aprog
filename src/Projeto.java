@@ -22,10 +22,16 @@ public class Projeto {
 
         // c)
         //chamar o metodo para calcular a media por dia
-        mediaHumorPorDia(moodMap);
+        double [] mediaHumorPorDias = mediaHumorPorDia(moodMap);
+        formatarMediaPorDia(mediaHumorPorDias, moodMap);
 
         // d)
         mediaHumorPorPessoa(moodMap);
+
+        // e)
+        double maiorMedia = encontrarMaiorMedia(mediaHumorPorDias);
+        System.out.printf("e) Days with the highest average mood (%.1f) : ",maiorMedia);
+        diasComMaiorMedia(mediaHumorPorDias, maiorMedia);
     }
 
     // a)
@@ -76,7 +82,7 @@ public class Projeto {
     }
 
     // c)
-    public static void mediaHumorPorDia(int[][] moodMap) {
+    public static double[] mediaHumorPorDia(int[][] moodMap) {
         double [] mediaHumorPorDias = new double[moodMap[0].length]; // array para armazenar o valor das médias
         for (int coluna = 0; coluna < moodMap[0].length; coluna++) { // vai percorrer cada dia/coluna
             double somaColuna = 0.0;
@@ -86,20 +92,19 @@ public class Projeto {
             double mediaPorDia = somaColuna / moodMap.length; // calcula a media dos elementos da coluna
             mediaHumorPorDias[coluna] = mediaPorDia; // armazena o valor da média no array
         }
-        System.out.println("c) Average mood each day:");
-        formatarDias(moodMap);
-        formatarMediaPorDia(mediaHumorPorDias);
-        System.out.println();
+        return mediaHumorPorDias;
     }
 
-    public static void formatarMediaPorDia(double[] mediaHumorPorDia) {
+    public static void formatarMediaPorDia(double[] mediaHumorPorDia, int [][] moodMap) {
+        System.out.println("c) Average mood each day:");
+        formatarDias(moodMap);
         //para cada coluna/dia vai imprimir os números da matriz
         System.out.print("mood       ");
         for (int dias = 0; dias < mediaHumorPorDia.length; dias++) {
             System.out.printf("%.1f ", mediaHumorPorDia[dias]);
         }
         System.out.println();
-
+        System.out.println();
     }
 
     // d)
@@ -114,15 +119,37 @@ public class Projeto {
             mediaHumorPorPessoa[linhas] = mediaPorPessoa;
         }
         System.out.println("d) Average of each person's mood:");
-        formatarMatriz(moodMap); // ESTE MODULO É PARA O MOODMAP/ FAZEMOS UM MODULO NOVO?
         formatarMediaPorPessoa(mediaHumorPorPessoa);
     }
-    public static void formatarMediaPorPessoa(double[] mediaHumorPorDia) {
-        //para cada linha/pessoa vai imprimir os números da matriz
-        for (int dias = 0; dias < mediaHumorPorDia.length; dias++) {
-            System.out.printf("%.1f ", mediaHumorPorDia[dias]);
+
+    public static void formatarMediaPorPessoa(double[] mediaHumorPorPessoa) {
+        //vai imprimir para cada pessoa/linha o respetivo número da pessoa
+        for (int pessoa = 0; pessoa < mediaHumorPorPessoa.length; pessoa++) {
+            System.out.printf("Person #%d :", pessoa);
+            System.out.printf("%.1f ", mediaHumorPorPessoa[pessoa]);
+            System.out.println();
         }
         System.out.println();
-
     }
+
+    // e)
+    public static double encontrarMaiorMedia(double [] mediaHumorPorDias) { // percorre o array e encontra a maior media
+        double maiorMedia = 0.0;
+        for (int dia = 0; dia < mediaHumorPorDias.length; dia++) {
+            if (mediaHumorPorDias[dia] > maiorMedia) {
+                maiorMedia = mediaHumorPorDias[dia];
+            }
+        }
+
+        return maiorMedia; // retorna o valor da maior media
+    }
+
+    public static void diasComMaiorMedia(double [] mediaHumorPorDias, double maiorMedia) {
+        for (int dia = 0; dia < mediaHumorPorDias.length; dia++) {
+            if (mediaHumorPorDias[dia] == maiorMedia) {
+                System.out.print(dia + " ");
+            }
+        }
+    }
+
 }
