@@ -32,6 +32,10 @@ public class Projeto {
         double maiorMedia = encontrarMaiorMedia(mediaHumorPorDias);
         System.out.printf("e) Days with the highest average mood (%.1f) : ",maiorMedia);
         diasComMaiorMedia(mediaHumorPorDias, maiorMedia);
+
+        // f)
+        System.out.println();
+        percentagemNiveisHumor(moodMap);
     }
 
     // a)
@@ -125,7 +129,7 @@ public class Projeto {
     public static void formatarMediaPorPessoa(double[] mediaHumorPorPessoa) {
         //vai imprimir para cada pessoa/linha o respetivo número da pessoa
         for (int pessoa = 0; pessoa < mediaHumorPorPessoa.length; pessoa++) {
-            System.out.printf("Person #%d :", pessoa);
+            System.out.printf("Person #%d : ", pessoa);
             System.out.printf("%.1f ", mediaHumorPorPessoa[pessoa]);
             System.out.println();
         }
@@ -150,6 +154,51 @@ public class Projeto {
                 System.out.print(dia + " ");
             }
         }
+    }
+
+    // f)
+    public static void percentagemNiveisHumor(int[][] moodMap) {
+        //contador para contar quantas vezes aparece cada nota, como as notas variam de 1-5, o array apenas precisa de 5 espaços
+        int[][] contador = new int[2][6];
+
+
+        for (int i=0; i < contador[0].length; i++) {
+            // assim a parte de cima da matriz vai ter os valores de cada humor possivel (1,2,3,..)
+            // enquanto a segunda linha da matriz vai ser preenchida de 0 para depois meter a contagem de cada número do humor
+            contador[0][i] = i;
+            contador[1][i] = 0;
+        }
+
+        for (int linhas = 0; linhas < moodMap.length; linhas++) {
+            for (int colunas = 0; colunas < moodMap[linhas].length; colunas++) {
+                // a variável humor vai buscar o número especifico do humor naquele dia
+                int humor = moodMap[linhas][colunas];
+                // depois o valor é comparado com a tabela do contador e é adicionado +1 ao respetivo número
+                if (humor == contador[0][humor]) {
+                    contador[1][humor]++;
+                }
+            }
+
+        }
+        formatarPercentagemNiveisHumor(contador, moodMap);
+    }
+
+    public static void formatarPercentagemNiveisHumor(int[][] contador, int [][] moodMap) {
+        System.out.println();
+        System.out.println("f) Percentage of mood levels:");
+        double percentagem;
+        // a variável numTotal guarda o número de dias * pessoas, que é o número total de moods.
+        int numTotal = moodMap.length * moodMap[0].length;
+        // para formatar do mood com um número maior, é preciso começar pelo fim do array
+        // como a array começa no 0 e vai ao 5, o comando contador[0].length ia dar 6, que é inválido e dá erro
+        // para fazer corretamente a contagem decrescente, é preciso começar no 5 (contador[0].length-1) até ao 0
+        for (int nivelHumor = contador[0].length - 1; nivelHumor >= 0; nivelHumor--)
+            if (contador[1][nivelHumor] > 0) {
+                // a percentagem é a quantidade de vezes que o número específico foi utilizado / numero total de moods * 100
+                percentagem = (double) contador[1][nivelHumor] / numTotal * 100;
+                System.out.printf("Mood #%d : %.1f%% \n", contador[0][nivelHumor], percentagem);
+            }
+
     }
 
 }
