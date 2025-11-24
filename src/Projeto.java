@@ -36,6 +36,9 @@ public class Projeto {
         // f)
         System.out.println();
         percentagemNiveisHumor(moodMap);
+
+        // g)
+        contagemDiasConsecutivos(moodMap);
     }
 
     // a)
@@ -178,7 +181,6 @@ public class Projeto {
                     contador[1][humor]++;
                 }
             }
-
         }
         formatarPercentagemNiveisHumor(contador, moodMap);
     }
@@ -199,6 +201,39 @@ public class Projeto {
                 System.out.printf("Mood #%d : %.1f%% \n", contador[0][nivelHumor], percentagem);
             }
 
+    }
+
+    // g)
+    public static void contagemDiasConsecutivos(int[][] moodMap) {
+        int [] guardarDiasConsecutivos = new int[moodMap.length]; // array para guardar a contagem de dias com transtorno emocional
+        for (int linhas = 0; linhas < moodMap.length; linhas++) {
+            int diasConsecutivos = 1;
+            int diasConsecutivosMaximo = 1;
+            for (int dia = 1; dia < moodMap[linhas].length; dia++) {
+                if (moodMap[linhas][dia] < 3 && moodMap[linhas][dia - 1] < 3) { // verifica se os números do array formam sequência de números inferiores a 3
+                    diasConsecutivos++; // tamanho da sequência
+                    if (diasConsecutivos > diasConsecutivosMaximo) { // para determinarmos a maior sequência de dias com transtorno
+                        diasConsecutivosMaximo = diasConsecutivos;
+                    }
+                }else  {
+                    diasConsecutivos = 1; // recomeçar a contagem da sequência quando esta acaba
+                }
+            }
+            guardarDiasConsecutivos[linhas] = diasConsecutivosMaximo;// guarda os valores da maior sequência por pessoa
+
+        }
+        pessoasComTranstornoEmocional(guardarDiasConsecutivos);
+    }
+
+    public static void pessoasComTranstornoEmocional(int[] diasConsecutivos) {          //FALTA OUTPUT "NINGUEM"
+        System.out.println("g) People with emotional disorders:");
+        for (int dia = 0; dia < diasConsecutivos.length; dia++) {
+            if (diasConsecutivos[dia] != 1) {
+                System.out.printf("Person #%d : ", dia);
+                System.out.printf("%d consecutive days ", diasConsecutivos[dia]);
+                System.out.println();
+            }
+        }
     }
 
 }
