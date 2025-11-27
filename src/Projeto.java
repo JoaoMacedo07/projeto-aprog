@@ -1,20 +1,14 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Projeto {
     static Scanner ler = new Scanner(System.in);
 
-    public static void main(String[] args) {
+    public static void main(String[] args)throws FileNotFoundException {
+
         // a)
-        int numPessoas, numDias;
-        //ler a linha("Sales dept. - november") antes dos números
-        if (ler.hasNextLine())
-            ler.nextLine();
-        //ler as dimensões e criar a matriz
-        numPessoas = ler.nextInt();
-        numDias = ler.nextInt();
-        int[][] moodMap = new int[numPessoas][numDias];
-        //chamar a função para preencher a matriz
-        lerInformacoes(moodMap);
+        int[][] moodMap = lerDadosFicheiro();
 
         // b)
         //chamar a função para visualizar a matriz formatada
@@ -42,13 +36,29 @@ public class Projeto {
     }
 
     // a)
-    public static void lerInformacoes(int[][] moodMap) {
-        for (int linhas = 0; linhas < moodMap.length; linhas++) { //ler o numero da primeira pessoa na primeira linha
-            for (int colunas = 0; colunas < moodMap[linhas].length; colunas++) { //passa à próxima coluna para o próximo dia
-                moodMap[linhas][colunas] = ler.nextInt();
+    public static int[][] lerDadosFicheiro()throws FileNotFoundException{
+        File ficheiro = new File("C:\\Users\\Tomás\\IdeaProjects\\Projeto2\\src\\MoodMap.txt");
+        if (!ficheiro.exists()){
+            System.out.println(ficheiro.getAbsolutePath());
+        }
+        Scanner in = new Scanner(ficheiro);
+        int numPessoas, numDias;
+        String primeiraLinha;
+        if (in.hasNextLine())
+            primeiraLinha = in.nextLine();
+        numPessoas = in.nextInt();
+        numDias = in.nextInt();
+        int[][] moodMap = new int[numPessoas][numDias];
+        //ler o número da primeira pessoa na primeira linha
+        for (int linhas = 0; linhas < moodMap.length; linhas++) {
+            //passa à próxima coluna para o próximo dia
+            for (int colunas = 0; colunas < moodMap[linhas].length; colunas++) {
+                moodMap[linhas][colunas] = in.nextInt();
 
             }
         }
+        in.close();
+        return  moodMap;
     }
 
     // b)
@@ -205,33 +215,53 @@ public class Projeto {
 
     // g)
     public static void contagemDiasConsecutivos(int[][] moodMap) {
-        int [] guardarDiasConsecutivos = new int[moodMap.length]; // array para guardar a contagem de dias com transtorno emocional
+        // array para guardar a contagem de dias com transtorno emocional
+        int [] guardarDiasConsecutivos = new int[moodMap.length];
         for (int linhas = 0; linhas < moodMap.length; linhas++) {
             int diasConsecutivos = 1;
             int diasConsecutivosMaximo = 1;
             for (int dia = 1; dia < moodMap[linhas].length; dia++) {
-                if (moodMap[linhas][dia] < 3 && moodMap[linhas][dia - 1] < 3) { // verifica se os números do array formam sequência de números inferiores a 3
-                    diasConsecutivos++; // tamanho da sequência
-                    if (diasConsecutivos > diasConsecutivosMaximo) { // para determinarmos a maior sequência de dias com transtorno
+                // verifica se os números do array formam sequência de números inferiores a 3
+                if (moodMap[linhas][dia] < 3 && moodMap[linhas][dia - 1] < 3) {
+                    // tamanho da sequência
+                    diasConsecutivos++;
+                    // para determinarmos a maior sequência de dias com transtorno
+                    if (diasConsecutivos > diasConsecutivosMaximo) {
                         diasConsecutivosMaximo = diasConsecutivos;
                     }
                 }else  {
-                    diasConsecutivos = 1; // recomeçar a contagem da sequência quando esta acaba
+                    // recomeçar a contagem da sequência quando esta acaba
+                    diasConsecutivos = 1;
                 }
             }
             guardarDiasConsecutivos[linhas] = diasConsecutivosMaximo;// guarda os valores da maior sequência por pessoa
 
         }
         pessoasComTranstornoEmocional(guardarDiasConsecutivos);
+        terapiaRecomendada(guardarDiasConsecutivos);
     }
 
     public static void pessoasComTranstornoEmocional(int[] diasConsecutivos) {          //FALTA OUTPUT "NINGUEM"
         System.out.println("g) People with emotional disorders:");
-        for (int dia = 0; dia < diasConsecutivos.length; dia++) {
-            if (diasConsecutivos[dia] != 1) {
-                System.out.printf("Person #%d : ", dia);
-                System.out.printf("%d consecutive days ", diasConsecutivos[dia]);
+        for (int pessoa = 0; pessoa < diasConsecutivos.length; pessoa++) {
+            if (diasConsecutivos[pessoa] != 1) {
+                System.out.printf("Person #%d : ", pessoa);
+                System.out.printf("%d consecutive days ", diasConsecutivos[pessoa]);
                 System.out.println();
+            }
+        }
+    }
+
+    // i)
+    public static void terapiaRecomendada(int[] diasConsecutivos){
+        System.out.println("i) Recommended therapy:");
+        for (int pessoa = 0; pessoa < diasConsecutivos.length; pessoa++) {
+            if (diasConsecutivos[pessoa] > 1) {
+                if (diasConsecutivos[pessoa] > 4) {
+                    System.out.printf("Person #%d : Psychological support\n", pessoa);
+                }else {
+                    System.out.printf("Person #%d : Listen to music\n", pessoa);
+                }
             }
         }
     }
