@@ -37,6 +37,7 @@ public class Projeto {
 
         //h)
         System.out.println();
+        System.out.println("h) People's Mood Level Charts:");
         visualizarGrafico(moodMap);
         //i)
     }
@@ -59,7 +60,7 @@ public class Projeto {
         }
     }
 
-    private static int[][] lerDadosTerminal() {
+    public static int[][] lerDadosTerminal() {
         int numPessoas, numDias;
         String primeiraLinha;
         // este ler.nextLine() serve para limpar o Enter que o utilizador dá quando seleciona o tipo de entrada de dados
@@ -329,15 +330,14 @@ public class Projeto {
     public static void visualizarGrafico(int[][] moodMap) {
         int minimo = 1;
 
-        for (int pessoas = 0; pessoas < moodMap.length; pessoas++) {
-            System.out.println();
+        for (int pessoas = 0; pessoas < moodMap.length; pessoas++) {System.out.println();
             System.out.printf("Person #%d : ", pessoas);
             System.out.println();
             int maximo = encontrarMaximo(moodMap[pessoas]);
 
             // vai fazer a parte vertical do gráfico
             // imprime os números desde o máximo até ao mínimo
-            for (int nivel = maximo; nivel >= 1; nivel--) {
+            for (int nivel = maximo; nivel >= minimo; nivel--) {
                 System.out.printf("%4d |", nivel);
 
                 // percorre coluna a coluna e quando o valor do humor dessa pessoa num determinado dia
@@ -364,6 +364,7 @@ public class Projeto {
                     System.out.print(" ");
                 }
             }
+            System.out.println();
 
         }
 
