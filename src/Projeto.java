@@ -4,11 +4,12 @@ import java.util.Scanner;
 
 public class Projeto {
     static Scanner ler = new Scanner(System.in);
+    static File ficheiro = new File("src/MoodMap.txt");
 
-    public static void main(String[] args)throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException {
 
         // a)
-        int[][] moodMap = lerDadosFicheiro();
+        int[][] moodMap = tipoDeLeitura();
 
         // b)
         //chamar a função para visualizar a matriz formatada
@@ -16,7 +17,7 @@ public class Projeto {
 
         // c)
         //chamar o metodo para calcular a media por dia
-        double [] mediaHumorPorDias = mediaHumorPorDia(moodMap);
+        double[] mediaHumorPorDias = mediaHumorPorDia(moodMap);
         formatarMediaPorDia(mediaHumorPorDias, moodMap);
 
         // d)
@@ -24,7 +25,7 @@ public class Projeto {
 
         // e)
         double maiorMedia = encontrarMaiorMedia(mediaHumorPorDias);
-        System.out.printf("e) Days with the highest average mood (%.1f) : ",maiorMedia);
+        System.out.printf("e) Days with the highest average mood (%.1f) : ", maiorMedia);
         diasComMaiorMedia(mediaHumorPorDias, maiorMedia);
 
         // f)
@@ -33,12 +34,63 @@ public class Projeto {
 
         // g)
         contagemDiasConsecutivos(moodMap);
+
+        //h)
+        System.out.println();
+        visualizarGrafico(moodMap);
+        //i)
     }
 
     // a)
-    public static int[][] lerDadosFicheiro()throws FileNotFoundException{
-        File ficheiro = new File("C:\\Users\\Tomás\\IdeaProjects\\Projeto2\\src\\MoodMap.txt");
-        if (!ficheiro.exists()){
+    public static int[][] tipoDeLeitura()throws FileNotFoundException {
+        System.out.println("Como deseja introduzir os Dados?");
+        System.out.println("Ler do ficheiro (Prima 1)");
+        System.out.println("Ler do terminal (prima 2)");
+        int tipoLeitura = ler.nextInt();
+        // validação do tipo de leitura
+        while (tipoLeitura < 0 || tipoLeitura > 2) {
+            System.out.println("Opção inválida, introduza um número válido.");
+            tipoLeitura = ler.nextInt();
+        }
+        if (tipoLeitura == 1) {
+            return lerDadosFicheiro();
+        }else{
+            return lerDadosTerminal();
+        }
+    }
+
+    private static int[][] lerDadosTerminal() {
+        int numPessoas, numDias;
+        String primeiraLinha;
+        // este ler.nextLine() serve para limpar o Enter que o utilizador dá quando seleciona o tipo de entrada de dados
+        // sem este ler.nextLine(), a string "primeiraLinha" guarda o valor do Enter e o cabeçalho é lido pelo ler.nextInt(), originando um erro
+        ler.nextLine();
+        // se o if detetar uma linha/cabeçalho, guarda numa string
+        if (ler.hasNextLine()) {}
+        primeiraLinha = ler.nextLine();
+        // agora que as linhas sem os números foram limpas, pode começar a ler o numPessoas e o numDias
+        numPessoas = ler.nextInt();
+        numDias = ler.nextInt();
+
+        if (numPessoas < 1 || numDias < 1) {
+            System.out.println("Valores inválidos.");
+            // o system.exit(0) impede que o sistema dê erro e assim o output apenas apresenta a mensagem de valores inválidos
+            System.exit(0);
+        }
+
+        int[][] moodMap = new int[numPessoas][numDias];
+        for (int linhas = 0; linhas < moodMap.length; linhas++) {
+            //passa à próxima coluna para o próximo dia
+            for (int colunas = 0; colunas < moodMap[linhas].length; colunas++) {
+                moodMap[linhas][colunas] = ler.nextInt();
+
+            }
+        }
+        return moodMap;
+    }
+
+    public static int[][] lerDadosFicheiro() throws FileNotFoundException {
+        if (!ficheiro.exists()) {
             System.out.println(ficheiro.getAbsolutePath());
         }
         Scanner in = new Scanner(ficheiro);
@@ -48,6 +100,14 @@ public class Projeto {
             primeiraLinha = in.nextLine();
         numPessoas = in.nextInt();
         numDias = in.nextInt();
+
+        if (numPessoas < 1 || numDias < 1) {
+            System.out.println("Valores inválidos.");
+            in.close();
+            // o system.exit(0) impede que o sistema dê erro e assim o output apenas apresenta a mensagem de valores inválidos
+            System.exit(0);
+        }
+
         int[][] moodMap = new int[numPessoas][numDias];
         //ler o número da primeira pessoa na primeira linha
         for (int linhas = 0; linhas < moodMap.length; linhas++) {
@@ -58,7 +118,7 @@ public class Projeto {
             }
         }
         in.close();
-        return  moodMap;
+        return moodMap;
     }
 
     // b)
@@ -241,7 +301,8 @@ public class Projeto {
         terapiaRecomendada(guardarDiasConsecutivos);
     }
 
-    public static void pessoasComTranstornoEmocional(int[] diasConsecutivos) {          //FALTA OUTPUT "NINGUEM"
+    public static void pessoasComTranstornoEmocional(int[] diasConsecutivos) {//FALTA OUTPUT "NINGUEM"
+        System.out.println();
         System.out.println("g) People with emotional disorders:");
         for (int pessoa = 0; pessoa < diasConsecutivos.length; pessoa++) {
             if (diasConsecutivos[pessoa] != 1) {
@@ -252,8 +313,65 @@ public class Projeto {
         }
     }
 
+    // h)
+    // encontrar o valor máximo do humor para depois formatar o gráfico com o valor máximo
+    public static int encontrarMaximo(int[] humorPessoa) {
+        // inicializei o máximo com o primeiro valor da primeira pessoa
+        int maximo = humorPessoa[0];
+        // o for vai percorrer linha a linha e se o valor atual(humorPessoa[i]) for maior que o valor máximo, troca de valor máximo
+        for (int i = 0; i < humorPessoa.length; i++) {
+            if (humorPessoa[i] > maximo) {
+                maximo = humorPessoa[i];
+            }
+        }
+        return maximo;
+    }
+    public static void visualizarGrafico(int[][] moodMap) {
+        int minimo = 1;
+
+        for (int pessoas = 0; pessoas < moodMap.length; pessoas++) {
+            System.out.println();
+            System.out.printf("Person #%d : ", pessoas);
+            System.out.println();
+            int maximo = encontrarMaximo(moodMap[pessoas]);
+
+            // vai fazer a parte vertical do gráfico
+            // imprime os números desde o máximo até ao mínimo
+            for (int nivel = maximo; nivel >= 1; nivel--) {
+                System.out.printf("%4d |", nivel);
+
+                // percorre coluna a coluna e quando o valor do humor dessa pessoa num determinado dia
+                // for igual ao nivel da coluna de humor, imprime um "*"
+                for (int dia = 0; dia < moodMap[0].length; dia++) {
+                    if (moodMap[pessoas][dia] == nivel) {
+                        System.out.print("*");
+                    }else{
+                        System.out.print(" ");
+                    }
+                }
+                System.out.println();
+            }
+            System.out.print("Mood +");
+            for (int i = 0; i < moodMap[0].length; i++) {
+                System.out.print("-");
+            }
+            System.out.println();
+            System.out.print("      ");
+            for (int i = 0; i < moodMap[0].length; i++) {
+                if ( i % 5 == 0){
+                    System.out.printf("%d" ,i);
+                }else{
+                    System.out.print(" ");
+                }
+            }
+
+        }
+
+    }
+
     // i)
     public static void terapiaRecomendada(int[] diasConsecutivos){
+        System.out.println();
         System.out.println("i) Recommended therapy:");
         for (int pessoa = 0; pessoa < diasConsecutivos.length; pessoa++) {
             if (diasConsecutivos[pessoa] > 1) {
